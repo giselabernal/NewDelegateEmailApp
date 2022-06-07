@@ -76,6 +76,8 @@ namespace NewDelegateEmailApp
             var emaillog = new LogEmail();
             emaillog.IdMember = member.MemberId;
             emaillog.Message = notificationMsg;
+
+            //este es un cambio prueba 
             emaillog.DateSent = DateTime.Now.Date;
 
             context.LogEmails.Add(emaillog);
