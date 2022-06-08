@@ -6,13 +6,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace NewDelegateEmailApp
 {
-    public static class ExecMethods
+    public class ExecMethods 
     {
         public delegate void EmailSentNotificationDelegate(Member member,string notificationMsg);
         //static List<string> GetListofEmailIdForGoldMembers()
+       // public delegate void SaveLog(Member member);
 
+        /// <metodo que manda llaamar el delegate>
+        /// si es 1 dejara el log en consola
+        /// si es 2 dejara el log en un archivo 
+        /// si es 3 lo guardara en la base de datos
+        /// </summary>
+        /// <param name="opcion"></param>
         public static void Execute(int opcion)
         {
             switch (opcion)
@@ -61,7 +69,7 @@ namespace NewDelegateEmailApp
             Console.WriteLine(notificationMsg);
         }
 
-        static void WriteEmailSentNotificationinLogFile(Member member, string notificationMsg)
+        public static void WriteEmailSentNotificationinLogFile(Member member, string notificationMsg)
         {
             System.IO.File.AppendAllText(@"c:\\delexample\log.txt", $"\n Id Member: {member.MemberId} - {notificationMsg}");
         }
@@ -73,17 +81,28 @@ namespace NewDelegateEmailApp
         static void InsertTheLogDetailsIntoDatabase(Member member, string notificationMsg)
         {
             var context = new EFCoreDemoContext();
-            var emaillog = new LogEmail();
-            emaillog.IdMember = member.MemberId;
-            emaillog.Message = notificationMsg;
+         //   try
+         //   {
+                //using (var emaillog = new LogEmail())
+                //{
+                //    emaillog.IdMember = member.MemberId;
+                //    emaillog.Message = notificationMsg;
+                //    emaillog.DateSent = DateTime.Now.Date;
+                //    context.LogEmails.Add(emaillog);
+                //    context.SaveChanges();
+                //};
+            }
+         //   catch (Exception ex)
+         //   {
+         //       Console.WriteLine(ex.Message); 
+        //    }
+            
 
             //este es un cambio prueba 
-            emaillog.DateSent = DateTime.Now.Date;
-
-            context.LogEmails.Add(emaillog);
-            context.SaveChanges();
             
-        }
-
+        //public void Dispose()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
