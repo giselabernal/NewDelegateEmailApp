@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace NewDelegateEmailApp.Services
 {
-    internal class EmailService : ISender
+    public class SMSService : ISender
     {
         public void Send(Member member, string message)
         {
-            Console.WriteLine($"Message by email sent to: {member.MemberId}: Name: {member.Name} : mail {member.Email}");
+            Console.WriteLine($"Message by SSMS sent to: {member.MemberId}: Name: {member.Name} : mail {member.Email}");
         }
     }
 }

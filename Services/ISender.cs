@@ -9,7 +9,7 @@ namespace NewDelegateEmailApp.Services
 {
     public interface ISender
     {
-        public void Send(Member member, string message);
+        void Send(Member member, string message);
       
     }
 }

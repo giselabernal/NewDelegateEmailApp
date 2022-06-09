@@ -10,6 +10,7 @@ namespace NewDelegateEmailApp.Repositories
 {
     internal class MemberRepository : IRepository
     {
+        //following lines are commented out to not request the context
         //private EFCoreDemoContext _context;
 
         ////public MemberRepository(EFCoreDemoContext context)

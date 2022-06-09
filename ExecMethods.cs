@@ -9,36 +9,33 @@ using System.Threading.Tasks;
 
 namespace NewDelegateEmailApp
 {
-    public class ExecMethods 
+    public class ExecMethods
     {
-        public delegate void EmailSentNotificationDelegate(Member member,string notificationMsg);
-        //static List<string> GetListofEmailIdForGoldMembers()
-       // public delegate void SaveLog(Member member);
+        delegate void EmailSentNotificationDelegate(Member member, string notificationMsg);
 
-        /// <metodo que manda llaamar el delegate>
+        //Following method is only executed if line 14 in Program is uncommented out
         /// si es 1 dejara el log en consola
         /// si es 2 dejara el log en un archivo 
         /// si es 3 lo guardara en la base de datos
-        /// </summary>
-        /// <param name="opcion"></param>
-        public static void Execute(int opcion)
+        public static void Execute(OptionsExec option)
         {
-            switch (opcion)
+            switch (option)
             {
-                case 1:
+                case OptionsExec.WriteEmailSentNotificationOnConsole:
                     SendMailtoAllGoldMembers(WriteEmailSentNotificationOnConsole);
                     break;
-                case 2:
+                case OptionsExec.WriteEmailSentNotificationinLogFile:
                     SendMailtoAllGoldMembers(WriteEmailSentNotificationinLogFile);
                     break;
-                case 3:
+                case OptionsExec.WriteEmailSentNotificationinDatabase:
                     SendMailtoAllGoldMembers(WriteEmailSentNotificationinDatabase);
-                    break; 
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(option));
             }
-            
-            
+
         }
-        static List<Member> GetListofMembers()
+        //method that works for SendMailtoAllGoldMembers methods only
+        private static List<Member> GetListofMembers()
         {
             List<Member> ListOfEmailIds = new List<Member>();
             var context = new EFCoreDemoContext();
@@ -52,16 +49,26 @@ namespace NewDelegateEmailApp
             return context.Members.ToList();
         }
 
-        //after creating delegate, we have to create the method or methods
-        //Create a method to send the email messages
-        public static void SendMailtoAllGoldMembers(EmailSentNotificationDelegate EmailSentNotification)
+        private static void SendMailtoAllGoldMembers(EmailSentNotificationDelegate EmailSentNotification)
         {
             foreach (var member in GetListofMembers())
             {
-                //logic for sending the mail to all the gold members  
+                //logic for sending the mail to all the  members  
                 System.Threading.Thread.Sleep(2000); //assuming that it will take 2 seconds to send a mail.   
                 EmailSentNotification(member, $" {member.Name}, EmailID {member.Email} : Email sent successfully");
             }
+        }
+
+        public static void RecordLogOnLogFile(Member member)
+        {
+            EmailSentNotificationDelegate EmailSentNotification = new EmailSentNotificationDelegate(WriteEmailSentNotificationinLogFile);
+            EmailSentNotification(member, $" {member.Name}, EmailID {member.Email} : Email sent successfully");
+        }
+
+        public static void RecordLogOnDB(Member member)
+        {
+            EmailSentNotificationDelegate EmailSentNotification = new EmailSentNotificationDelegate(WriteEmailSentNotificationinDatabase);
+            EmailSentNotification(member, $" {member.Name}, EmailID {member.Email} : Email sent successfully");
         }
 
         static void WriteEmailSentNotificationOnConsole(Member member, string notificationMsg)
@@ -69,40 +76,40 @@ namespace NewDelegateEmailApp
             Console.WriteLine(notificationMsg);
         }
 
-        public static void WriteEmailSentNotificationinLogFile(Member member, string notificationMsg)
+        static void WriteEmailSentNotificationinLogFile(Member member, string notificationMsg)
         {
             System.IO.File.AppendAllText(@"c:\\delexample\log.txt", $"\n Id Member: {member.MemberId} - {notificationMsg}");
         }
-        //Create a method to write log in database
         static void WriteEmailSentNotificationinDatabase(Member member, string notificationMsg)
         {
             InsertTheLogDetailsIntoDatabase(member, notificationMsg);
         }
         static void InsertTheLogDetailsIntoDatabase(Member member, string notificationMsg)
         {
-            var context = new EFCoreDemoContext();
-         //   try
-         //   {
-                //using (var emaillog = new LogEmail())
-                //{
-                //    emaillog.IdMember = member.MemberId;
-                //    emaillog.Message = notificationMsg;
-                //    emaillog.DateSent = DateTime.Now.Date;
-                //    context.LogEmails.Add(emaillog);
-                //    context.SaveChanges();
-                //};
+            try
+            {
+                using (var context = new EFCoreDemoContext())
+                {
+                    var emaillog = new LogEmail();
+                    emaillog.IdMember = member.MemberId;
+                    emaillog.Message = notificationMsg;
+                    emaillog.DateSent = DateTime.Now.Date;
+                    context.LogEmails.Add(emaillog);
+                    context.SaveChanges();
+                };
             }
-         //   catch (Exception ex)
-         //   {
-         //       Console.WriteLine(ex.Message); 
-        //    }
-            
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
 
-            //este es un cambio prueba 
-            
-        //public void Dispose()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            }
+        }
+    }
+
+    public enum  OptionsExec
+    {
+        WriteEmailSentNotificationOnConsole=1,
+        WriteEmailSentNotificationinLogFile=2,
+        WriteEmailSentNotificationinDatabase=3
     }
 }

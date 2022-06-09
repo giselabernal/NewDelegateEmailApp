@@ -19,7 +19,6 @@ namespace NewDelegateEmailApp.Services
 
         public void SendMessage(Member member, string message)
         {
-            //_emailService.Send(customer, message);
             _sender.Send(member, message);
         }
     }
